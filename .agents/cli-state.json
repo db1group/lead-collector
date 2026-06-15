@@ -1,0 +1,88 @@
+{
+  "agent": "claude",
+  "modelId": "sonnet",
+  "modelName": "Sonnet 4.6",
+  "effortId": "high",
+  "effortName": "High",
+  "workMode": "greenfield",
+  "currentStep": "step1-discovery",
+  "currentStepStatus": "completed",
+  "steps": [
+    {
+      "name": "step1-discovery",
+      "stepState": {
+        "phaseState": {
+          "phase": "completed",
+          "result": {
+            "stage": "step1-discovery",
+            "runId": "f0caf83b-eb8b-4245-93e0-a952a9bf9020",
+            "summary": "Gaps incorporados: persistência via IndexedDB com `idb`, documentação via ADRs. Descoberta encerrada com 2 domínios mapeados.",
+            "outcome": "completed",
+            "payload": {
+              "createdArtifacts": [
+                ".agents/context/discovery-answers.md",
+                ".agents/maps/functional-map.md"
+              ],
+              "nextAllowedActions": [
+                "continue_to_stage2"
+              ],
+              "identifiedDomains": [
+                {
+                  "name": "Lead",
+                  "slug": "lead",
+                  "dependsOn": [],
+                  "order": 0
+                },
+                {
+                  "name": "Compartilhamento WhatsApp",
+                  "slug": "whatsapp-sharing",
+                  "dependsOn": [
+                    "lead"
+                  ],
+                  "order": 1
+                }
+              ],
+              "gapQuestions": []
+            }
+          }
+        },
+        "lastPrompt": "Você está continuando a descoberta funcional com respostas humanas para os gaps identificados.\n\nObjetivo desta rodada: incorporar as respostas nos artefatos canônicos da descoberta funcional\ne encerrar a descoberta, a menos que exista um gap realmente novo e materialmente diferente\ndos já respondidos.\n\n## Perguntas devolvidas anteriormente\n\n- [persistence-strategy] lead: Qual estratégia de persistência local deve ser usada para armazenar os leads no dispositivo? Os requisitos determinam armazenamento exclusivamente local (RNF11), mas não especificam a API do browser.\n  Motivo do gap: A escolha impacta a arquitetura do repositório de leads: localStorage é simples e suficiente para listas pequenas, mas tem limite de ~5 MB e armazena apenas strings; IndexedDB suporta volumes maiores, consultas assíncronas e dados estruturados, com maior complexidade de implementação. Para este app de uso pessoal em eventos, localStorage tende a ser suficiente, mas a decisão deve ser validada pelo usuário pois é uma escolha arquitetural explícita.\n- [additional-docs] lead: Quais formas de documentação adicional devem ser mantidas no projeto além das skills de negócio geradas pela Clovis? Nenhuma evidência de Storybook, ADRs, OpenAPI ou Collections de Postman foi encontrada no projeto ou nas restrições declaradas.\n  Motivo do gap: Documentação adicional (Storybook para componentes, ADRs para decisões arquiteturais, etc.) impacta o setup do projeto e os artefatos gerados nas etapas seguintes. Como o projeto é greenfield sem evidência de preferência, a decisão deve ser validada antes de configurar pipelines ou estrutura de pastas.\n\n## Respostas do usuário\n\n- Pergunta persistence-strategy (lead)\n  Resposta: usar a lib idb com indexeddb\n- Pergunta additional-docs (lead)\n  Resposta: ADRs — Architecture Decision Records (decisões arquiteturais em Markdown)\n  Opção sugerida escolhida: adrs\n\n## Regras obrigatórias desta rodada\n\n- Considere os IDs de gap acima como perguntas já tratadas nesta rodada humana.\n- Não devolva novamente os mesmos `question.id` já respondidos.\n- Só devolva `ask_gaps` se, após incorporar as respostas, restarem gaps realmente novos\n  e materialmente diferentes dos já respondidos.\n- Se um gap anterior foi resolvido pela resposta humana, incorpore a decisão no\n  `functional-map.md` e remova a pendência correspondente.\n- A incorporação não pode ficar apenas em seções transversais (observações, decisões\n  consolidadas, ordem de implementação). Atualize também o(s) bloco(s) de domínio\n  diretamente impactado(s) — em especial as `Dependências externas relevantes` e as\n  `Regras inferidas` — para refletir a decisão. Quando uma dependência do legado for\n  descartada na reescrita, marque-a explicitamente no bloco do domínio (ex.:\n  \"`vuedraggable` — dependência do legado, não usada na reescrita\"). Quando uma\n  dependência for substituída, cite a substituta pelo nome no bloco. Isso é necessário\n  porque a próxima etapa (preparação do projeto para agentes) itera por domínio e pode não\n  reler seções transversais.\n- Atualize `discovery-answers.md` apenas se a resposta introduzir uma restrição ou decisão\n  transversal que precise valer nas etapas futuras. Em particular, quando a resposta decidir\n  sobre um framework de spec-driven concorrente (ex.: Spec Kit, OpenSpec), registre no\n  `discovery-answers.md` o framework detectado, as evidências (paths) e a decisão tomada\n  (remover, manter ou outra).\n- Se ainda restar alguma decisão de rewrite sem evidência no código e sem resposta humana,\n  devolva um gap explícito em vez de assumir uma solução.\n- Não crie `.agents/context/decisions.md`, `.agents/context/executive-summary.md` nem\n  qualquer outro artefato paralelo.\n- Atualize apenas os artefatos canônicos da descoberta funcional.\n- Em `identifiedDomains` do resultado, devolva o conjunto COMPLETO e atual de domínios do\n  `functional-map.md` (não apenas os alterados). Se você consolidou, fundiu ou removeu\n  domínios, liste apenas os que permanecem — a Clovis CLI substitui o índice por este conjunto.\n\nAtualize os artefatos da descoberta funcional conforme necessário e retorne um novo resultado\nestruturado.\n\n## Protocolo obrigatório de resposta para a Clovis CLI\n\nSua resposta deve conter apenas um único `<clovis_result>{...}</clovis_result>` válido,\nsem texto livre antes ou depois. A Clovis CLI ignora qualquer texto fora do envelope.\nA tag `<clovis_result>` deve aparecer UMA ÚNICA vez e conter APENAS o objeto JSON — nada de\nprosa, comentários, uma segunda cópia do JSON ou um segundo envelope dentro ou depois dela.\n\n- Stage obrigatório: `step1-discovery`\n- Run ID obrigatório: `f0caf83b-eb8b-4245-93e0-a952a9bf9020`\n\nOutcomes válidos do resultado final:\n- `ask_gaps`\n- `completed`\n- `failed`\n\nShape do resultado final:\n```json\n{\n  \"stage\": \"step1-discovery\",\n  \"runId\": \"f0caf83b-eb8b-4245-93e0-a952a9bf9020\",\n  \"outcome\": \"ask_gaps | completed | failed\",\n  \"summary\": \"Resumo curto para a UI\",\n  \"payload\": {\n    \"createdArtifacts\": [\"...\"],\n    \"identifiedDomains\": [\n      { \"name\": \"...\", \"slug\": \"kebab-case\", \"dependsOn\": [\"...\"], \"order\": 0 }\n    ],\n    \"gapQuestions\": [\n      {\n        \"id\": \"...\",\n        \"domain\": \"...\",\n        \"prompt\": \"...\",\n        \"rationale\": \"...\",\n        \"suggestedOptions\": [{ \"id\": \"...\", \"label\": \"...\" }]\n      }\n    ],\n    \"nextAllowedActions\": [\"answer_gaps\", \"continue_to_stage2\"]\n  }\n}\n```\n\nConsiderações importantes:\n\n- Use EXATAMENTE as chaves do shape acima — NÃO invente, renomeie nem aninhe campos novos no\n  `payload`. Informação extra entra nos campos já previstos (ex.: `summary`), nunca em chaves novas.\n- `identifiedDomains` é obrigatório quando o outcome for `completed` e deve conter todos os\n  domínios listados no `functional-map.md`. Para cada domínio:\n  - `name` — nome humano do domínio, conforme o mapa;\n  - `slug` — identificador em kebab-case **sempre em inglês**, usado para nomear a\n    pasta da skill em `.agents/skills/<slug>/`. Apenas letras minúsculas (a-z),\n    números e hífens simples; não começar/terminar com hífen e não usar hífens\n    consecutivos. Traduza o nome do domínio para inglês quando o `name` estiver\n    em português (ex.: `name: \"Centros de Custo\"` → `slug: \"cost-centers\"`);\n  - `dependsOn` — lista de `slug`s dos domínios dos quais este depende, conforme as\n    dependências declaradas no mapa funcional;\n  - `order` — posição na ordem de implementação sugerida (inteiro a partir de 0).\n    Respeite a seção `Ordem de implementação sugerida` do mapa, quando existir.\n- Se houver gaps realmente irresolúveis após investigação profunda, inclua `gapQuestions`\nno payload e finalize com `ask_gaps`.\n  - NUNCA inclua opções genéricas de escape como `Outro`, `Outra`, `Outra estratégia`,\n    `Outra opção`, `Nenhuma das anteriores` ou variações equivalentes — a Clovis CLI já\n    injeta automaticamente um item `Outro` com campo de texto livre na UI, então repetir\n    essa opção gera duplicidade visível ao usuário;\n  - se nenhuma alternativa concreta puder ser sugerida, devolva `suggestedOptions` vazio em\n    vez de inventar um placeholder genérico.\n- Se a etapa estiver concluída, finalize com `completed`.\n- Se houver falha não recuperável, use `failed`.",
+        "lastRunId": "f0caf83b-eb8b-4245-93e0-a952a9bf9020",
+        "summaryHistory": [
+          "Gaps incorporados: persistência via IndexedDB com `idb`, documentação via ADRs. Descoberta encerrada com 2 domínios mapeados."
+        ],
+        "updatedAt": "2026-06-15T20:05:22.312Z"
+      }
+    }
+  ],
+  "discoveryAnswers": {
+    "systemType": "Aplicação SPA mobile-first para captação de leads em eventos\nreact, typescript, tailwind, vite",
+    "scope": {
+      "type": "whole_project"
+    },
+    "businessInput": "regras de negócio em '/Users/douglas.junior/Downloads/requisitos-captacao-leads.md'",
+    "restrictions": [
+      "usar typescript sempre                                                                                                                                                                                                    \nmanter boas práticas de clean code                                                                                                                                                                                        \nnão utilizar estados globais, como zustand, redux, etc                                                                                                                                                                    \nsempre dar preferências para componentes radiz/shadcn, evitar usar componentes HTML puros ou criar componentes customizados                                                                                               \nescrever testes de unidade e de componentes para 100% de códigos executáveis, exeção são arquivos de meta configuração, template e startup como App.tsx, index.ts, etc                                                    \ninstale os componentes do shadcn via CLI oficial do shadcn                                                                                                                                                                \nusar vitest para os testes, bem como react testing library                                                                                                                                                                \nusar arquitetura limpa com injeção de dependência simples através de abstrações (interfaces) para evitar a necessidade de mocks em arquivos ts do projeto                                                                 \nmocks são permitidos apenas para APIs do DOM e bibliotecas de terceiro"
+    ]
+  },
+  "domainIndex": [
+    {
+      "name": "Lead",
+      "slug": "lead",
+      "dependsOn": [],
+      "order": 0,
+      "documented": false,
+      "specified": false
+    },
+    {
+      "name": "Compartilhamento WhatsApp",
+      "slug": "whatsapp-sharing",
+      "dependsOn": [
+        "lead"
+      ],
+      "order": 1,
+      "documented": false,
+      "specified": false
+    }
+  ]
+}
