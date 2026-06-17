@@ -1,73 +1,83 @@
-# React + TypeScript + Vite
+# Lead Collector
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplicação web otimizada para celular, para captação rápida de leads
+em eventos presenciais. O lead é cadastrado em poucos segundos, armazenado localmente
+no dispositivo e compartilhado via WhatsApp para o contato ou grupo escolhido no momento
+do envio — sem servidores, sem login e funcionando offline.
 
-Currently, two official plugins are available:
+## 1. Requisitos
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Node.js 22+
+- Yarn 4
 
-## React Compiler
+## 2. Instalação das Dependências
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```sh
+yarn install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 3. Rodar em Desenvolvimento
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```sh
+yarn dev
 ```
+
+O Vite sobe o servidor de desenvolvimento com HMR. Para testar diretamente no celular
+na mesma rede, exponha o host:
+
+```sh
+yarn dev --host
+```
+
+## 4. Tecnologias Principais
+
+- `TypeScript` com `ESM` (`type: module`)
+- `React 19` para a interface
+- `Vite` como dev server e bundler de produção
+- `Vitest` (ambiente `jsdom`) para testes automatizados
+- `ESLint` (flat config) para padronização de código
+- Alias `@` apontando para `src/`
+
+## 5. Build e Execução Local
+
+```sh
+yarn build
+yarn preview
+```
+
+O comando `yarn build` roda o type check (`tsc -b`) e gera a saída de produção em
+`dist/`; o `yarn preview` serve localmente o build gerado.
+
+## 6. Fluxo do Produto
+
+O fluxo-alvo prioriza velocidade de preenchimento durante o evento:
+
+1. Cadastro do lead em formulário compacto (nome, empresa, contato, dor e temperatura)
+2. Validação e persistência local do lead no dispositivo
+3. Abertura automática do WhatsApp com a mensagem padronizada já preenchida
+4. Gestão da lista de leads cadastrados (visualização, reenvio e exclusão)
+
+## 7. Lint e Testes
+
+```sh
+# lint
+yarn lint
+# type check
+yarn ts
+
+# testes
+yarn test
+# testes com cobertura
+yarn test:coverage
+```
+
+> `yarn lint --fix` para correção automática de problemas de lint.
+
+> Ao rodar `yarn test:coverage` o relatório de cobertura estará disponível em [coverage/index.html](coverage/index.html).
+
+## 8. Documentação e Referências
+
+- Requisitos do produto: [requisitos-captacao-leads.md](requisitos-captacao-leads.md) —
+  fonte de verdade dos requisitos funcionais, não funcionais e regras de negócio.
+- Skills do projeto: [.agents/skills/](.agents/skills/) — padrões técnicos para agentes
+  de geração de código (React Hook Form + Zod, shadcn/ui, Vite, testes e boas práticas).

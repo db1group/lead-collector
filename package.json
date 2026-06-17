@@ -5,8 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "ts": "tsc -b",
     "build": "tsc -b && vite build",
-    "lint": "eslint .",
+    "lint": "eslint . --cache --cache-location ./node_modules/.tmp/eslint.cache",
     "preview": "vite preview",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage"
