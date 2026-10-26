@@ -24,6 +24,7 @@ dist-ssr
 *.sw?
 
 coverage/
+.claude/skills
 
 .yarn/*
 !.yarn/cache
